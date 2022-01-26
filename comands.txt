@@ -1,4 +1,9 @@
-Primero se debe crear el material criptografico, todos los certificados, componentes, llaves privadas. Para esto se nececita crytogen, se crea el archivo llamado crypto-config.yaml.
+Primero se deben eliminar las carpetas que se crean al ejecutar los comandos
+
+rm -R crypto-config
+rm -R channel-artifacts
+
+Se debe crear el material criptografico, todos los certificados, componentes, llaves privadas. Para esto se nececita crytogen, se crea el archivo llamado crypto-config.yaml.
 
 cryptogen generate --config=./crypto-config.yaml
 
