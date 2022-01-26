@@ -1,6 +1,11 @@
-Primero se debe crear el material criptografico, todos los certificados, componentes, llaves privadas. Para esto se nececita crytogen, se crea el archivo llamado crypto-config.yaml.
+Primero se deben eliminar las carpetas que se crean al ejecutar los comandos
 
-cryptogen generate --config=./crypto-config.yaml
+rm -R crypto-config
+rm -R channel-artifacts
+
+Se debe crear el material criptografico, todos los certificados, componentes, llaves privadas. Para esto se nececita crytogen, se crea el archivo llamado crypto-config.yaml.
+
+cryptogen generate --config=./crypto-config.yaml 
 
 Este comando nos crea una carpeta llamada crypto-config, en la cual se encuentran dos carpetas, una con el material criptografico del orderer de la red y la segunda con el material criptografico de cada organización.
 Dentro del material criptografico se encuentra los certificados y llaves para CA, MSP, Orderers, TLS y Users. Estos certificados (x509) se pueden validar, estos se utilizan para identificar la identidad de quienes participan en la red.
