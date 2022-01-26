@@ -1,0 +1,357 @@
+---
+    ################################################################################
+    #   Section: Organizations
+    ################################################################################
+    Organizations:
+    
+        - &OrdererOrg
+            Name: OrdererOrg
+            ID: OrdererMSP
+            MSPDir: crypto-config/ordererOrganizations/ibcn.unl.edu.ec/msp
+            # Politicas por defecto
+            Policies:
+                Readers:
+                    Type: Signature
+                    Rule: "OR('OrdererMSP.member')"
+                Writers:
+                    Type: Signature
+                    Rule: "OR('OrdererMSP.member')"
+                Admins:
+                    Type: Signature
+                    Rule: "OR('OrdererMSP.admin')"
+            OrdererEndpoints:
+                - orderer.ibcn.unl.edu.ec:7050
+    
+        - &DTI
+            Name: DTIMSP
+            ID: Org1MSP
+            MSPDir: crypto-config/peerOrganizations/org1.ibcn.unl.edu.ec/msp
+            Policies:
+                Readers:
+                    Type: Signature
+                    Rule: "OR('Org1MSP.admin', 'Org1MSP.peer', 'Org1MSP.client')"
+                Writers:
+                    Type: Signature
+                    Rule: "OR('Org1MSP.admin', 'Org1MSP.client')"
+                Admins:
+                    Type: Signature
+                    Rule: "OR('Org1MSP.admin')"
+                Endorsement:
+                    Type: Signature
+                    Rule: "OR('Org1MSP.peer')"
+            # Se define el AnchorPeer para la organización
+            AnchorPeers:
+                - Host: peer0.org1.ibcn.unl.edu.ec
+                  Port: 7051
+
+        - &OCS
+            Name: OCSMSP
+            ID: Org2MSP
+            MSPDir: crypto-config/peerOrganizations/org2.ibcn.unl.edu.ec/msp
+            Policies:
+                Readers:
+                    Type: Signature
+                    Rule: "OR('Org2MSP.admin', 'Org2MSP.peer', 'Org2MSP.client')"
+                Writers:
+                    Type: Signature
+                    Rule: "OR('Org2MSP.admin', 'Org2MSP.client')"
+                Admins:
+                    Type: Signature
+                    Rule: "OR('Org2MSP.admin')"
+                Endorsement:
+                    Type: Signature
+                    Rule: "OR('Org2MSP.peer')"
+            AnchorPeers:
+                - Host: peer0.org2.ibcn.unl.edu.ec
+                  Port: 7051
+    
+        - &TEG
+            Name: TEGMSP
+            ID: Org3MSP
+            MSPDir: crypto-config/peerOrganizations/org3.ibcn.unl.edu.ec/msp
+            Policies:
+                Readers:
+                    Type: Signature
+                    Rule: "OR('Org3MSP.admin', 'Org3MSP.peer', 'Org3MSP.client')"
+                Writers:
+                    Type: Signature
+                    Rule: "OR('Org3MSP.admin', 'Org3MSP.client')"
+                Admins:
+                    Type: Signature
+                    Rule: "OR('Org3MSP.admin')"
+                Endorsement:
+                    Type: Signature
+                    Rule: "OR('Org3MSP.peer')"
+            AnchorPeers:
+                - Host: peer0.org3.ibcn.unl.edu.ec
+                  Port: 7051
+    
+        - &FARNR
+            Name: FARNRMSP
+            ID: Org4MSP
+            MSPDir: crypto-config/peerOrganizations/org4.ibcn.unl.edu.ec/msp
+            Policies:
+                Readers:
+                    Type: Signature
+                    Rule: "OR('Org4MSP.admin', 'Org4MSP.peer', 'Org4MSP.client')"
+                Writers:
+                    Type: Signature
+                    Rule: "OR('Org4MSP.admin', 'Org4MSP.client')"
+                Admins:
+                    Type: Signature
+                    Rule: "OR('Org4MSP.admin')"
+                Endorsement:
+                    Type: Signature
+                    Rule: "OR('Org4MSP.peer')"
+            AnchorPeers:
+                - Host: peer0.org4.ibcn.unl.edu.ec
+                  Port: 7051
+    
+        - &FEIRNNR
+            Name: FEIRNNRMSP
+            ID: Org5MSP
+            MSPDir: crypto-config/peerOrganizations/org5.ibcn.unl.edu.ec/msp
+            Policies:
+                Readers:
+                    Type: Signature
+                    Rule: "OR('Org5MSP.admin', 'Org5MSP.peer', 'Org5MSP.client')"
+                Writers:
+                    Type: Signature
+                    Rule: "OR('Org5MSP.admin', 'Org5MSP.client')"
+                Admins:
+                    Type: Signature
+                    Rule: "OR('Org5MSP.admin')"
+                Endorsement:
+                    Type: Signature
+                    Rule: "OR('Org5MSP.peer')"
+            AnchorPeers:
+                - Host: peer0.org5.ibcn.unl.edu.ec
+                  Port: 7051
+    
+        - &FEAC
+            Name: FEACMSP
+            ID: Org6MSP
+            MSPDir: crypto-config/peerOrganizations/org6.ibcn.unl.edu.ec/msp
+            Policies:
+                Readers:
+                    Type: Signature
+                    Rule: "OR('Org6MSP.admin', 'Org6MSP.peer', 'Org6MSP.client')"
+                Writers:
+                    Type: Signature
+                    Rule: "OR('Org6MSP.admin', 'Org6MSP.client')"
+                Admins:
+                    Type: Signature
+                    Rule: "OR('Org6MSP.admin')"
+                Endorsement:
+                    Type: Signature
+                    Rule: "OR('Org6MSP.peer')"
+            AnchorPeers:
+                - Host: peer0.org6.ibcn.unl.edu.ec
+                  Port: 7051
+    
+        - &FJSA
+            Name: FJSAMSP
+            ID: Org7MSP
+            MSPDir: crypto-config/peerOrganizations/org7.ibcn.unl.edu.ec/msp
+            Policies:
+                Readers:
+                    Type: Signature
+                    Rule: "OR('Org7MSP.admin', 'Org7MSP.peer', 'Org7MSP.client')"
+                Writers:
+                    Type: Signature
+                    Rule: "OR('Org7MSP.admin', 'Org7MSP.client')"
+                Admins:
+                    Type: Signature
+                    Rule: "OR('Org7MSP.admin')"
+                Endorsement:
+                    Type: Signature
+                    Rule: "OR('Org7MSP.peer')"
+            AnchorPeers:
+                - Host: peer0.org7.ibcn.unl.edu.ec
+                  Port: 7051
+    
+        - &FSH
+            Name: FSHMSP
+            ID: Org8MSP
+            MSPDir: crypto-config/peerOrganizations/org8.ibcn.unl.edu.ec/msp
+            Policies:
+                Readers:
+                    Type: Signature
+                    Rule: "OR('Org8MSP.admin', 'Org8MSP.peer', 'Org8MSP.client')"
+                Writers:
+                    Type: Signature
+                    Rule: "OR('Org8MSP.admin', 'Org8MSP.client')"
+                Admins:
+                    Type: Signature
+                    Rule: "OR('Org8MSP.admin')"
+                Endorsement:
+                    Type: Signature
+                    Rule: "OR('Org8MSP.peer')"
+            AnchorPeers:
+                - Host: peer0.org8.ibcn.unl.edu.ec
+                  Port: 7051
+    ################################################################################
+    #   SECTION: Capabilities
+    ################################################################################
+    Capabilities:
+        Channel: &ChannelCapabilities
+            V2_0: true
+    
+        Orderer: &OrdererCapabilities
+            V2_0: true
+    
+        Application: &ApplicationCapabilities
+            V2_0: true        
+    
+    ################################################################################
+    #   SECTION: Application
+    ################################################################################
+    Application: &ApplicationDefaults
+    
+        # Organizations is the list of orgs which are defined as participants on
+        # the application side of the network
+        Organizations:
+    
+        # Policies defines the set of policies at this level of the config tree
+        # For Application policies, their canonical path is
+        #   /Channel/Application/<PolicyName>
+        Policies:
+            Readers:
+                Type: ImplicitMeta
+                Rule: "ANY Readers"
+            Writers:
+                Type: ImplicitMeta
+                Rule: "ANY Writers"
+            Admins:
+                Type: ImplicitMeta
+                Rule: "MAJORITY Admins"
+            LifecycleEndorsement:
+                Type: ImplicitMeta
+                Rule: "MAJORITY Endorsement"
+            Endorsement:
+                Type: ImplicitMeta
+                Rule: "MAJORITY Endorsement"
+    
+        Capabilities:
+            <<: *ApplicationCapabilities    
+    
+    ################################################################################
+    #   SECTION: Orderer
+    ################################################################################
+    Orderer: &OrdererDefaults
+        # Orderer Type: The orderer implementation to start
+        OrdererType: solo
+    
+    #    OrdererType: etcdraft
+    
+        EtcdRaft:
+            Consenters:
+            - Host: orderer.ibcn.unl.edu.ec
+              Port: 7050
+              ClientTLSCert: ../organizations/ordererOrganizations/ibcn.unl.edu.ec/orderers/orderer.ibcn.unl.edu.ec/tls/server.crt
+              ServerTLSCert: ../organizations/ordererOrganizations/ibcn.unl.edu.ec/orderers/orderer.ibcn.unl.edu.ec/tls/server.crt
+    
+        Addresses:
+            - orderer.ibcn.unl.edu.ec:7050
+        BatchTimeout: 2s
+        BatchSize:
+            MaxMessageCount: 10
+            AbsoluteMaxBytes: 99 MB
+            PreferredMaxBytes: 512 KB
+    
+        Kafka:
+            Brokers:
+                - 127.0.0.1:9092
+        Organizations:
+    
+        Policies:
+            Readers:
+                Type: ImplicitMeta
+                Rule: "ANY Readers"
+            Writers:
+                Type: ImplicitMeta
+                Rule: "ANY Writers"
+            Admins:
+                Type: ImplicitMeta
+                Rule: "MAJORITY Admins"
+            # BlockValidation specifies what signatures must be included in the block
+            # from the orderer for the peer to validate it.
+            BlockValidation:
+                Type: ImplicitMeta
+                Rule: "ANY Writers"
+    
+    ################################################################################
+    #
+    #   CHANNEL
+    #
+    #   This section defines the values to encode into a config transaction or
+    #   genesis block for channel related parameters.
+    #
+    ################################################################################
+    Channel: &ChannelDefaults
+        # Policies defines the set of policies at this level of the config tree
+        # For Channel policies, their canonical path is
+        #   /Channel/<PolicyName>
+        Policies:
+            # Who may invoke the 'Deliver' API
+            Readers:
+                Type: ImplicitMeta
+                Rule: "ANY Readers"
+            # Who may invoke the 'Broadcast' API
+            Writers:
+                Type: ImplicitMeta
+                Rule: "ANY Writers"
+            # By default, who may modify elements at this config level
+            Admins:
+                Type: ImplicitMeta
+                Rule: "MAJORITY Admins"
+    
+        # Capabilities describes the channel level capabilities, see the
+        # dedicated Capabilities section elsewhere in this file for a full
+        # description
+        Capabilities:
+            <<: *ChannelCapabilities
+    
+    ################################################################################
+    #   Profile
+    ################################################################################
+    Profiles:
+    
+        # Se define como se comporta el consorcio
+        ThreeOrgsOrdererGenesis:
+            <<: *ChannelDefaults
+            Orderer:
+                <<: *OrdererDefaults
+                Organizations:
+                    - *OrdererOrg
+                Capabilities:
+                    <<: *OrdererCapabilities
+            Consortiums:
+                SampleConsortium:
+                    Organizations:
+                        - *DTI
+                        - *OCS
+                        - *TEG
+                        - *FARNR
+                        - *FEIRNNR
+                        - *FEAC
+                        - *FJSA
+                        - *FSH
+        # Se define como estará configurado el canal 
+        ThreeOrgsChannel:
+            Consortium: SampleConsortium
+            <<: *ChannelDefaults
+            Application:
+                <<: *ApplicationDefaults
+                Organizations:
+                    - *DTI
+                    - *OCS
+                    - *TEG
+                    - *FARNR
+                    - *FEIRNNR
+                    - *FEAC
+                    - *FJSA
+                    - *FSH
+                Capabilities:
+                    <<: *ApplicationCapabilities
+    

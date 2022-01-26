@@ -1,0 +1,91 @@
+# Define el orderer para la red
+OrdererOrgs:
+    - Name: Orderer # Nombre que se le asigna al orderer
+      Domain: ibcn.unl.edu.ec # Dominio de la red
+      EnableNodeOUs: true
+      Specs:
+        - Hostname: orderer
+          SANS:
+            - localhost 
+# Define las organizaciones que tendrá la red
+PeerOrgs:
+    # Se define la organización DTI
+    - Name: DTI # Nombre de la organización
+      Domain: org1.ibcn.unl.edu.ec # Dominio de la organización
+      EnableNodeOUs: true
+      Template:
+        Count: 2 # Cantidad de nodos que se van a crear
+        SANS:
+          - localhost #
+      Users:
+        Count: 1 # Cantidad de usuarios que se van a crear, por defecto se crea el material criptográfico para el usuario admin y para un usuario transaccional (user1)
+    # Se define la organización OCS
+    - Name: OCS
+      Domain: org2.ibcn.unl.edu.ec
+      EnableNodeOUs: true
+      Template:
+        Count: 2
+        SANS:
+          - localhost
+      Users:
+        Count: 1
+    # Se define la organización TEG
+    - Name: TEG
+      Domain: org3.ibcn.unl.edu.ec
+      EnableNodeOUs: true    
+      Template:
+        Count: 2
+        SANS:
+          - localhost
+      Users:
+        Count: 1
+    # Se define la organización FARNR
+    - Name: FARNR
+      Domain: org4.ibcn.unl.edu.ec
+      EnableNodeOUs: true    
+      Template:
+        Count: 2
+        SANS:
+          - localhost
+      Users:
+        Count: 1
+    # Se define la organización FEIRNNR
+    - Name: FEIRNNR
+      Domain: org5.ibcn.unl.edu.ec
+      EnableNodeOUs: true    
+      Template:
+        Count: 2
+        SANS:
+          - localhost
+      Users:
+        Count: 1
+    # Se define la organización FEAC
+    - Name: FEAC
+      Domain: org6.ibcn.unl.edu.ec
+      EnableNodeOUs: true    
+      Template:
+        Count: 2
+        SANS:
+          - localhost
+      Users:
+        Count: 1
+    # Se define la organización FJSA
+    - Name: FJSA
+      Domain: org7.ibcn.unl.edu.ec
+      EnableNodeOUs: true    
+      Template:
+        Count: 2
+        SANS:
+          - localhost
+      Users:
+        Count: 1
+    # Se define la organización FSH
+    - Name: FSH
+      Domain: org8.ibcn.unl.edu.ec
+      EnableNodeOUs: true    
+      Template:
+        Count: 2
+        SANS:
+          - localhost
+      Users:
+        Count: 1
