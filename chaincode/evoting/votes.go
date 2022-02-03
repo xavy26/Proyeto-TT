@@ -3,6 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+
+	"evoting/voter"
+	"evoting/candidate"
+	"evoting/political_party"
+	"evoting/election"
+
 	"github.com/hyperledger/fabric-contract-api-go/tree/main/contractapi"
 )
 
@@ -14,21 +20,9 @@ type SmartContract struct {
 /*
 * DOMAIN MODEL
 */
-// Voter describes the basic data of a voter
-type Voter struct {
-  Name string `json:"name"`
-  Last_Name string `json:"last_name"`
-  Dni string `json:"dni"`
-  Email string `json:"email"`
-  Function string `json:"function"`
-}
 
-// Candidate describes the basic data of a candidate
-type Candidate struct {
-  Position string `json:"position"`
-  Photo string `json:"photo"`
-  Voter Voter `json:"voter"`
-}
+
+
 
 // Political_Party describes the basic data of a political party
 type Political_Party struct {
@@ -86,7 +80,7 @@ func (s *SmartContract) Set(ctx contractapi.TransactionContextInterface, voteId 
 	return ctx.GetStub().PutState(voteId, voteAsBytes)
 }
 
-func (s *SmartContract) Query(ctx contractapi.TransactionContextInterface, voteId string) (*Food, error) {
+func (s *SmartContract) Query(ctx contractapi.TransactionContextInterface, voteId string) (*Vote, error) {
 	voteAsBytes, err := ctx.GetStub().GetState(voteId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to read from world state: %s", err.Error())
@@ -95,13 +89,47 @@ func (s *SmartContract) Query(ctx contractapi.TransactionContextInterface, voteI
 		return nil, fmt.Errorf("%s does no exist", voteId)
 	}
 
-	vote := new(Food)
+	vote := new(Vote)
 	err = json.Unmarshal(voteAsBytes, vote)
 	if err != nil {
 		return nil, fmt.Errorf("Unmarshal error: %s", err.Error())
 	}
 
 	return vote, nil
+}
+
+func (s *SmartContract) History(ctx contractapi.TransactionContextInterface, voteId string) ([]*Vote, error) {
+	votesIterator, err := ctx.GetStub().GetHistoryForKey(voteId)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get from history: %s", err.Error())
+	}
+	if votesIterator != nil {
+		return nil, fmt.Errorf("%s does no exist", voteId)
+	}
+
+	defer votesIterator.Close()
+
+	var votes []*Vote
+
+	for votesIterator.HasNext() {
+		queryResponse, err := votesIterator.Next()
+		if err != nil {
+			fmt.Println(err.Error())
+			return nil, err
+		}
+
+		var vote Vote
+
+		err = json.Unmarshal(queryResponse.Value, &vote)
+		if err != nil {
+			fmt.Println(err.Error())
+			return nil, err
+		}
+		votes = append(votes, &vote)
+	}
+
+	 return votes, nil
 }
 
 func main() {
