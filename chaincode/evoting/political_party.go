@@ -19,8 +19,8 @@ type SmartContract struct {
 // Political_Party describes the basic data of a political party
 type Political_Party struct {
   Name string `json:"name" valid:"required,alpha"`
-  Description string `json:"description" valid:"required,alpha"`
-  Logo string `json:"logo" valid:"required"`
+  Description string `json:"description" valid:"required"`
+  Logo string `json:"logo" valid:"required,base64"`
   Candidates []Candidate `json:"political_partys" valid:"required"`
 	CreatedAt time.Time `json:"created_at" valid:"required"`
 }

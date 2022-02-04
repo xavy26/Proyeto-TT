@@ -19,7 +19,7 @@ type SmartContract struct {
 // Election describes the basic data of a election
 type Election struct {
 	Name string `json:"name" valid:"required,alpha"`
-  Description string `json:"description" valid:"required,alpha"`
+  Description string `json:"description" valid:"required"`
   Date_Hour_Strat string `json:"date_hour_start" valid:"required"`
   Date_Hour_end string `json:"date_hour_end" valid:"required"`
   Political_Parties []Political_Party `json:"political_parties" valid:"required"`

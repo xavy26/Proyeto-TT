@@ -19,7 +19,7 @@ type SmartContract struct {
 type Voter struct {
   Name string `json:"name" valid:"required,alpha"`
   Last_Name string `json:"last_name" valid:"required,alpha"`
-  Dni string `json:"dni" valid:"required,numeric"`
+  Dni string `json:"dni" valid:"required,alphanum"`
   Email string `json:"email" valid:"email"`
   Function string `json:"function" valid:"required,alpha"`
 	CreatedAt time.Time `json:"created_at" valid:"required"`

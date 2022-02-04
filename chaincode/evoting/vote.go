@@ -33,7 +33,7 @@ func (s *SmartContract) CreateVote(ctx contractapi.TransactionContextInterface, 
 		return err
 	}
 	if exists {
-		return fmt.Errorf("El item de resultado %s ya existe", voteId)
+		return fmt.Errorf("El voto %s ya existe", voteId)
 	}
 	// Crear instancia de Vote
 	vote := Vote{
