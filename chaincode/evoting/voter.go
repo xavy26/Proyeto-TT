@@ -1,5 +1,6 @@
 package main
-
+// example https://hyperledger-fabric.readthedocs.io/en/release-2.2/chaincode4ade.html
+// validaciones https://github.com/asaskevich/govalidator
 import (
 	"encoding/json"
 	"fmt"
