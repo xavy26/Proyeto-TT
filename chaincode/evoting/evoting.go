@@ -21,6 +21,7 @@ type SmartContract struct {
 
 // Voter describes the basic data of a voter
 type Voter struct {
+  ID string `json:"id" valid:"required"`
   Name string `json:"name" valid:"required,alpha"`
   Last_Name string `json:"last_name" valid:"required,alpha"`
   Dni string `json:"dni" valid:"required,alphanum"`
@@ -31,6 +32,7 @@ type Voter struct {
 
 // Candidate describes the basic data of a candidate
 type Candidate struct {
+  ID string `json:"id" valid:"required"`
   Position string `json:"position" valid:"required,alpha"`
   Photo string `json:"photo" valid:"required,base64"`
   Voter Voter `json:"voter" valid:"required"`
@@ -39,6 +41,7 @@ type Candidate struct {
 
 // Political_Party describes the basic data of a political party
 type Political_Party struct {
+  ID string `json:"id" valid:"required"`
   Name string `json:"name" valid:"required,alpha"`
   Description string `json:"description" valid:"required"`
   Logo string `json:"logo" valid:"required,base64"`
@@ -48,6 +51,7 @@ type Political_Party struct {
 
 // Election describes the basic data of a election
 type Election struct {
+  ID string `json:"id" valid:"required"`
 	Name string `json:"name" valid:"required,alpha"`
   Description string `json:"description" valid:"required"`
   Date_Hour_Strat string `json:"date_hour_start" valid:"required"`
@@ -58,7 +62,8 @@ type Election struct {
 
 // Vote describes the basic data of a vote
 type Vote struct {
-	Author  Voter `json:"author" valid:"required"`
+	ID string `json:"id" valid:"required"`
+	Author Voter `json:"author" valid:"required"`
 	Vote Political_Party `json:"vote" valid:"required"`
   Election Election `json:"election" valid:"required"`
 	Created_At time.Time `json:"created_at" valid:"required"`
@@ -66,17 +71,19 @@ type Vote struct {
 
 // Result describes the data of the results of the winner in an election and the list of the results of the other parties
 type Result struct {
+  ID string `json:"id" valid:"required"`
 	Winner Political_Party `json:"winner" valid:"required"`
-  Nro_votes int `json:"nro_votes" valid:"required,numeric"`
+  Nro_Votes int `json:"nro_votes" valid:"required,numeric"`
   Election Election `json:"election" valid:"required"`
 	Created_At time.Time `json:"created_at" valid:"required"`
 }
 
 // Item_Result describes the data of the results of each political party in an item_result
 type Item_Result struct {
+  ID string `json:"id" valid:"required"`
 	Political_Party Political_Party `json:"political_party" valid:"required"`
   Nro_Votes int `json:"nro_votes" valid:"required,numeric"`
-  Result int `json:"result" valid:"required"`
+  Result Result `json:"result" valid:"required"`
 	Created_At time.Time `json:"created_at" valid:"required"`
 }
 
@@ -107,7 +114,7 @@ func (s *SmartContract) CreateVoter(ctx contractapi.TransactionContextInterface,
 	  Dni: dni,
 	  Email: email,
 	  Function: function,
-		Created_At: time.Now()
+		Created_At: time.Now(),
 	}
 	// Validaciones de sintaxis
 	valid, err := govalidator.ValidateStruct(voter)
@@ -115,6 +122,7 @@ func (s *SmartContract) CreateVoter(ctx contractapi.TransactionContextInterface,
 		fmt.Printf("Errores de validacion de campos: %s", err.Error())
 		return err
 	}
+  fmt.Printf("estado de validacion: %s", valid)
 	// comvertir Voter en arreglo de bytes para enviar al ledger
 	voteAsBytes, err := json.Marshal(voter)
 	if err != nil {
@@ -125,7 +133,7 @@ func (s *SmartContract) CreateVoter(ctx contractapi.TransactionContextInterface,
 	return ctx.GetStub().PutState(voterId, voteAsBytes)
 }
 
-func (s *SmartContract) GetById(ctx contractapi.TransactionContextInterface, voterId string) (*Voter, error) {
+func (s *SmartContract) GetVoterById(ctx contractapi.TransactionContextInterface, voterId string) (*Voter, error) {
 	voterAsBytes, err := ctx.GetStub().GetState(voterId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to read from world state: %s", err.Error())
@@ -245,6 +253,7 @@ func (s *SmartContract) CreateCandidate(ctx contractapi.TransactionContextInterf
 		fmt.Printf("Errores de validacion de campos: %s", err.Error())
 		return err
 	}
+  fmt.Printf("estado de validacion: %s", valid)
 	// comvertir Candidate en arreglo de bytes para enviar al ledger
 	candidateAsBytes, err := json.Marshal(candidate)
 	if err != nil {
@@ -255,7 +264,7 @@ func (s *SmartContract) CreateCandidate(ctx contractapi.TransactionContextInterf
 	return ctx.GetStub().PutState(candidateId, candidateAsBytes)
 }
 
-func (s *SmartContract) GetById(ctx contractapi.TransactionContextInterface, candidateId string) (*Candidate, error) {
+func (s *SmartContract) GetCandidateById(ctx contractapi.TransactionContextInterface, candidateId string) (*Candidate, error) {
 	candidateAsBytes, err := ctx.GetStub().GetState(candidateId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to read from world state: %s", err.Error())
@@ -352,7 +361,7 @@ func (s *SmartContract) CandidateHistory(ctx contractapi.TransactionContextInter
 +++++++++++++++++++
 */
 
-func (s *SmartContract) CreatePolitical_Party(ctx contractapi.TransactionContextInterface, political_partyId string, name string, description string, logo String, candidates []Candidate) error {
+func (s *SmartContract) CreatePolitical_Party(ctx contractapi.TransactionContextInterface, political_partyId string, name string, description string, logo string, candidates []Candidate) error {
 	// Validaciones de negocio
 	exists, err := s.Political_PartyExists(ctx, political_partyId)
 	if err != nil {
@@ -367,7 +376,7 @@ func (s *SmartContract) CreatePolitical_Party(ctx contractapi.TransactionContext
 	  Description: description,
 	  Logo: logo,
 	  Candidates: candidates,
-		Created_At: time.Now()
+		Created_At: time.Now(),
 	}
 	// Validaciones de sintaxis
 	valid, err := govalidator.ValidateStruct(political_party)
@@ -375,6 +384,7 @@ func (s *SmartContract) CreatePolitical_Party(ctx contractapi.TransactionContext
 		fmt.Printf("Errores de validacion de campos: %s", err.Error())
 		return err
 	}
+  fmt.Printf("estado de validacion: %s", valid)
 	// comvertir Political_Party en arreglo de bytes para enviar al ledger
 	political_partyAsBytes, err := json.Marshal(political_party)
 	if err != nil {
@@ -385,7 +395,7 @@ func (s *SmartContract) CreatePolitical_Party(ctx contractapi.TransactionContext
 	return ctx.GetStub().PutState(political_partyId, political_partyAsBytes)
 }
 
-func (s *SmartContract) GetById(ctx contractapi.TransactionContextInterface, political_partyId string) (*Political_Party, error) {
+func (s *SmartContract) GetPoliticalPartyById(ctx contractapi.TransactionContextInterface, political_partyId string) (*Political_Party, error) {
 	political_partyAsBytes, err := ctx.GetStub().GetState(political_partyId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to read from world state: %s", err.Error())
@@ -498,7 +508,7 @@ func (s *SmartContract) CreateElection(ctx contractapi.TransactionContextInterfa
 	  Date_Hour_Strat: date_hour_start,
 	  Date_Hour_end: date_hour_end,
 	  Political_Parties: political_parties,
-		Created_At: time.Now()
+		Created_At: time.Now(),
 	}
 	// Validaciones de sintaxis
 	valid, err := govalidator.ValidateStruct(election)
@@ -506,6 +516,7 @@ func (s *SmartContract) CreateElection(ctx contractapi.TransactionContextInterfa
 		fmt.Printf("Errores de validacion de campos: %s", err.Error())
 		return err
 	}
+  fmt.Printf("estado de validacion: %s", valid)
 	// comvertir Election en arreglo de bytes para enviar al ledger
 	electionAsBytes, err := json.Marshal(election)
 	if err != nil {
@@ -516,7 +527,7 @@ func (s *SmartContract) CreateElection(ctx contractapi.TransactionContextInterfa
 	return ctx.GetStub().PutState(electionId, electionAsBytes)
 }
 
-func (s *SmartContract) GetById(ctx contractapi.TransactionContextInterface, electionId string) (*Election, error) {
+func (s *SmartContract) GetElectionById(ctx contractapi.TransactionContextInterface, electionId string) (*Election, error) {
 	electionAsBytes, err := ctx.GetStub().GetState(electionId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to read from world state: %s", err.Error())
@@ -613,7 +624,7 @@ func (s *SmartContract) ElectionHistory(ctx contractapi.TransactionContextInterf
 ++++++++
 */
 
-func (s *SmartContract) CreateVote(ctx contractapi.TransactionContextInterface, voteId string, autor Voter, vote Political_Party, election Election) error {
+func (s *SmartContract) CreateVote(ctx contractapi.TransactionContextInterface, voteId string, voter Voter, political_party Political_Party, election Election) error {
 	// Validaciones de negocio
 	exists, err := s.VoteExists(ctx, voteId)
 	if err != nil {
@@ -625,10 +636,10 @@ func (s *SmartContract) CreateVote(ctx contractapi.TransactionContextInterface, 
 	// Crear instancia de Vote
 	vote := Vote{
 		ID: voteId,
-	  Author: autor,
-	  Vote: vote,
+	  Author: voter,
+	  Vote: political_party,
 	  Election: election,
-		Created_At: time.Now()
+		Created_At: time.Now(),
 	}
 	// Validaciones de sintaxis
 	valid, err := govalidator.ValidateStruct(vote)
@@ -636,6 +647,7 @@ func (s *SmartContract) CreateVote(ctx contractapi.TransactionContextInterface, 
 		fmt.Printf("Errores de validacion de campos: %s", err.Error())
 		return err
 	}
+  fmt.Printf("estado de validacion: %s", valid)
 	// comvertir Vote en arreglo de bytes para enviar al ledger
 	voteAsBytes, err := json.Marshal(vote)
 	if err != nil {
@@ -646,7 +658,7 @@ func (s *SmartContract) CreateVote(ctx contractapi.TransactionContextInterface, 
 	return ctx.GetStub().PutState(voteId, voteAsBytes)
 }
 
-func (s *SmartContract) GetById(ctx contractapi.TransactionContextInterface, voteId string) (*Vote, error) {
+func (s *SmartContract) GetVoteById(ctx contractapi.TransactionContextInterface, voteId string) (*Vote, error) {
 	voteAsBytes, err := ctx.GetStub().GetState(voteId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to read from world state: %s", err.Error())
@@ -743,7 +755,7 @@ func (s *SmartContract) VoteHistory(ctx contractapi.TransactionContextInterface,
 ++++++++++
 */
 
-func (s *SmartContract) CreateResult(ctx contractapi.TransactionContextInterface, resultId string, nro_votes string, political_party Political_Party) error {
+func (s *SmartContract) CreateResult(ctx contractapi.TransactionContextInterface, resultId string, nro_votes int, political_party Political_Party, election Election) error {
 	// Validaciones de negocio
 	exists, err := s.ResultExists(ctx, resultId)
 	if err != nil {
@@ -755,16 +767,19 @@ func (s *SmartContract) CreateResult(ctx contractapi.TransactionContextInterface
 	// Crear instancia de Result
 	result := Result{
 		ID: resultId,
-		Nro_Votes:description,
-	  Political_Party: political_party,
-		Created_At: time.Now()
+		Nro_Votes: nro_votes,
+	  Winner: political_party,
+    Election: election,
+		Created_At: time.Now(),
 	}
+
 	// Validaciones de sintaxis
 	valid, err := govalidator.ValidateStruct(result)
 	if err != nil {
 		fmt.Printf("Errores de validacion de campos: %s", err.Error())
 		return err
 	}
+  fmt.Printf("estado de validacion: %s", valid)
 	// comvertir Result en arreglo de bytes para enviar al ledger
 	resultAsBytes, err := json.Marshal(result)
 	if err != nil {
@@ -775,7 +790,7 @@ func (s *SmartContract) CreateResult(ctx contractapi.TransactionContextInterface
 	return ctx.GetStub().PutState(resultId, resultAsBytes)
 }
 
-func (s *SmartContract) GetById(ctx contractapi.TransactionContextInterface, resultId string) (*Result, error) {
+func (s *SmartContract) GetResultById(ctx contractapi.TransactionContextInterface, resultId string) (*Result, error) {
 	resultAsBytes, err := ctx.GetStub().GetState(resultId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to read from world state: %s", err.Error())
@@ -872,7 +887,7 @@ func (s *SmartContract) ResultHistory(ctx contractapi.TransactionContextInterfac
 +++++++++++++++
 */
 
-func (s *SmartContract) CreateItem_Result(ctx contractapi.TransactionContextInterface, item_resultId string, nro_votes string, political_party Political_Party) error {
+func (s *SmartContract) CreateItem_Result(ctx contractapi.TransactionContextInterface, item_resultId string, nro_votes int, political_party Political_Party, result Result) error {
 	// Validaciones de negocio
 	exists, err := s.Item_ResultExists(ctx, item_resultId)
 	if err != nil {
@@ -884,16 +899,19 @@ func (s *SmartContract) CreateItem_Result(ctx contractapi.TransactionContextInte
 	// Crear instancia de Item_Result
 	item_result := Item_Result{
 		ID: item_resultId,
-		Nro_Votes:description,
+		Nro_Votes: nro_votes,
 	  Political_Party: political_party,
-		Created_At: time.Now()
+    Result: result,
+		Created_At: time.Now(),
 	}
+
 	// Validaciones de sintaxis
 	valid, err := govalidator.ValidateStruct(item_result)
 	if err != nil {
 		fmt.Printf("Errores de validacion de campos: %s", err.Error())
 		return err
 	}
+  fmt.Printf("estado de validacion: %s", valid)
 	// comvertir Item_Result en arreglo de bytes para enviar al ledger
 	item_resultAsBytes, err := json.Marshal(item_result)
 	if err != nil {
@@ -904,7 +922,7 @@ func (s *SmartContract) CreateItem_Result(ctx contractapi.TransactionContextInte
 	return ctx.GetStub().PutState(item_resultId, item_resultAsBytes)
 }
 
-func (s *SmartContract) GetById(ctx contractapi.TransactionContextInterface, item_resultId string) (*Item_Result, error) {
+func (s *SmartContract) GetItemResultById(ctx contractapi.TransactionContextInterface, item_resultId string) (*Item_Result, error) {
 	item_resultAsBytes, err := ctx.GetStub().GetState(item_resultId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to read from world state: %s", err.Error())
