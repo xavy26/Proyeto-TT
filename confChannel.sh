@@ -1,4 +1,5 @@
 #!/bin/bash
+
 echo $PWD
 echo "####################################################### "
 echo "                Creación del canal "

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Primero se deben eliminar las carpetas que se crean al ejecutar los comandos
 sudo rm -R crypto-config
 sudo rm -R channel-artifacts
@@ -69,3 +71,13 @@ docker cp confChannel.sh cli:/opt/gopath/src/github.com/hyperledger/fabric/peer/
 docker container exec -it cli ls
 docker container exec -it cli chmod +x confChannel.sh
 docker container exec -it cli ./confChannel.sh
+
+echo "####################################################### "
+echo "#              INSTALAR CHAINCODE                     # "
+echo "####################################################### "
+CHANNEL_NAME=$CHANNEL_NAME docker-compose -f docker-compose-cli-
+docker cp chaincode/evoting/ cli:/opt/gopath/src/github.com/chaincode/evoting/
+docker cp chaincode/installChaincode.sh cli:/opt/gopath/src/github.com/hyperledger/fabric/peer/installChaincode.sh
+docker container exec -it cli ls
+docker container exec -it cli chmod +x instainstallChaincodell.sh
+docker container exec -it cli ./installChaincode.sh
