@@ -1,0 +1,56 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'application'
+}
+
+group 'com.ibcn.unl.edu.ec.manage_wallet'
+version '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:2.0.+'
+    implementation 'com.owlike:genson:1.5'
+    testImplementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:2.0.+'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+    testImplementation 'org.assertj:assertj-core:3.11.1'
+    implementation 'com.google.guava:guava:30.1.1-jre'
+    testImplementation 'org.mockito:mockito-core:2.+'
+}
+
+application {
+    mainClass = 'com.ibcn.unl.edu.ec.manage_wallet.Wallet'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+repositories {
+    maven {
+        url "https://hyperledger.jfrog.io/hyperledger/fabric-maven"
+    }
+    jcenter()
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+shadowJar {
+    baseName = 'chaincode'
+    version = null
+    classifier = null
+
+    manifest {
+        attributes 'Main-Class': 'org.hyperledger.fabric.contract.ContractRouter'
+    }
+}
