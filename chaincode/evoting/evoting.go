@@ -35,7 +35,7 @@ type Candidate struct {
   ID string `json:"id" valid:"required"`
   Position string `json:"position" valid:"required"`
   Photo string `json:"photo" valid:"required,base64"`
-  Voter Voter `json:"voter" valid:"required"`
+  Voter *Voter `json:"voter" valid:"required"`
 	Created_At time.Time `json:"created_at" valid:"required"`
 }
 
@@ -45,7 +45,7 @@ type Political_Party struct {
   Name string `json:"name" valid:"required"`
   Description string `json:"description" valid:"required"`
   Logo string `json:"logo" valid:"required,base64"`
-  Candidates []Candidate `json:"political_partys" valid:"required"`
+  Candidates []*Candidate `json:"political_partys" valid:"required"`
 	Created_At time.Time `json:"created_at" valid:"required"`
 }
 
@@ -56,34 +56,34 @@ type Election struct {
   Description string `json:"description" valid:"required"`
   Date_Hour_Strat string `json:"date_hour_start" valid:"required"`
   Date_Hour_end string `json:"date_hour_end" valid:"required"`
-  Political_Parties []Political_Party `json:"political_parties" valid:"required"`
+  Political_Parties []*Political_Party `json:"political_parties" valid:"required"`
 	Created_At time.Time `json:"created_at" valid:"required"`
 }
 
 // Vote describes the basic data of a vote
 type Vote struct {
 	ID string `json:"id" valid:"required"`
-	Author Voter `json:"author" valid:"required"`
-	Vote Political_Party `json:"vote" valid:"required"`
-  Election Election `json:"election" valid:"required"`
+	Author *Voter `json:"author" valid:"required"`
+	Vote *Political_Party `json:"vote" valid:"required"`
+  Election *Election `json:"election" valid:"required"`
 	Created_At time.Time `json:"created_at" valid:"required"`
 }
 
 // Result describes the data of the results of the winner in an election and the list of the results of the other parties
 type Result struct {
   ID string `json:"id" valid:"required"`
-	Winner Political_Party `json:"winner" valid:"required"`
+	Winner *Political_Party `json:"winner" valid:"required"`
   Nro_Votes int `json:"nro_votes" valid:"required,numeric"`
-  Election Election `json:"election" valid:"required"`
+  Election *Election `json:"election" valid:"required"`
 	Created_At time.Time `json:"created_at" valid:"required"`
 }
 
 // Item_Result describes the data of the results of each political party in an item_result
 type Item_Result struct {
   ID string `json:"id" valid:"required"`
-	Political_Party Political_Party `json:"political_party" valid:"required"`
+	Political_Party *Political_Party `json:"political_party" valid:"required"`
   Nro_Votes int `json:"nro_votes" valid:"required,numeric"`
-  Result Result `json:"result" valid:"required"`
+  Result *Result `json:"result" valid:"required"`
 	Created_At time.Time `json:"created_at" valid:"required"`
 }
 
@@ -664,7 +664,7 @@ func (s *SmartContract) CreateVote(ctx contractapi.TransactionContextInterface, 
 		return fmt.Errorf("El voto %s ya existe", voteId)
 	}
 
-	voter, err := s.GetPoliticalPartyById(ctx, voterId)
+	voter, err := s.GetVoterById(ctx, voterId)
 	if err != nil {
 		return fmt.Errorf("Error al obtener el votante", err.Error())
 	}
@@ -959,7 +959,7 @@ func (s *SmartContract) CreateItem_Result(ctx contractapi.TransactionContextInte
 		return fmt.Errorf("Error al obtener el partido politico", err.Error())
 	}
 
-	result, err := s.GetElectionById(ctx, resultId)
+	result, err := s.GetResultById(ctx, resultId)
 	if err != nil {
 		return fmt.Errorf("Error al obtener el result", err.Error())
 	}
