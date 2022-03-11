@@ -25,18 +25,18 @@ type Wallet struct {
 // Token_Wallet describes the data of the results of each tokens in wallets
 type Token_Wallet struct {
   ID string `json:"id" valid:"required"`
-	Wallet Wallet `json:"wallet" valid:"required"`
+	Wallet *Wallet `json:"wallet" valid:"required"`
 	Election string `json:"election" valid:"required"`
 	Token_Amount int `json:"nro_votes" valid:"required,numeric"`
 	Created_At time.Time `json:"created_at" valid:"required"`
 }
 
-func (s *SmartContract) CreateWallet(ctx contractapi.TransactionContextInterface, walletId string, token_amount int, owner string, political_party string, election string) error {
+func (s *SmartContract) CreateWallet(ctx contractapi.TransactionContextInterface, walletId string, token_amount int, owner string, political_party string, election string, token_walletId string) error {
 	// Validaciones de negocio
-	if owner == nil && political_party == nil {
+	if owner == "" && political_party == "" {
 		return fmt.Errorf("Se debe enviar o un owner o un political party")
 	}
-	if owner != nil && political_party != nil {
+	if owner != "" && political_party != "" {
 		return fmt.Errorf("Se debe enviar o un owner o un political party, pero no ambos")
 	}
 	exists, err := s.WalletExists(ctx, walletId)
@@ -47,12 +47,12 @@ func (s *SmartContract) CreateWallet(ctx contractapi.TransactionContextInterface
 		return fmt.Errorf("la Wallet %s ya existe", walletId)
 	}
 
-	exists, err := s.Token_WalletExists(ctx, token_walletId)
+	exist, err := s.Token_WalletExists(ctx, token_walletId)
 	if err != nil {
 		return err
 	}
-	if exists {
-		return fmt.Errorf("El Token de la Wallet %s ya existe", walletId)
+	if exist {
+		return fmt.Errorf("El Token de la Wallet %s ya existe", token_walletId)
 	}
 	// Crear instancia de Wallet
 	wallet := Wallet{
@@ -76,13 +76,13 @@ func (s *SmartContract) CreateWallet(ctx contractapi.TransactionContextInterface
 		return err
 	}
 	// gusrdar nueva wallet
-	err := ctx.GetStub().PutState(walletId, walletAsBytes)
-  if err != nil {
-    fmt.Printf("Error al crear la wallet: %s", err.Error())
-    return err
+	error := ctx.GetStub().PutState(walletId, walletAsBytes)
+  if error != nil {
+    fmt.Printf("Error al crear la wallet: %s", error.Error())
+    return error
   }
   // otener la walet guardada
-  wallet_get, err := GetWalletById(ctx, walletId)
+  wallet_get, err := s.GetWalletById(ctx, walletId)
   if err != nil {
     fmt.Printf("Error al obtener la walet: %s", err.Error())
     return err
@@ -97,12 +97,12 @@ func (s *SmartContract) CreateWallet(ctx contractapi.TransactionContextInterface
   }
 
   // Validaciones de sintaxis
-  valid, err := govalidator.ValidateStruct(token_wallet)
+  validT, err := govalidator.ValidateStruct(token_wallet)
   if err != nil {
     fmt.Printf("Errores de validacion de campos: %s", err.Error())
     return err
   }
-  fmt.Printf("estado de validacion: %s", valid)
+  fmt.Printf("estado de validacion: %s", validT)
   // comvertir Wallet en arreglo de bytes para enviar al ledger
   token_walletAsBytes, err := json.Marshal(token_wallet)
   if err != nil {
@@ -239,7 +239,7 @@ if err != nil {
 	 if err != nil {
 		 return nil, fmt.Errorf("Unmarshal error: %s", err.Error())
 	 }
-   if token.Wallet == wallet.ID {
+   if token.Wallet.ID == wallet.ID {
      tokens = append(tokens, token)
    }
  }
@@ -276,7 +276,7 @@ if err != nil {
 	 if err != nil {
 		 return nil, fmt.Errorf("Unmarshal error: %s", err.Error())
 	 }
-   if token.Wallet == wallet.ID && token.election == election {
+   if token.Wallet.ID == wallet.ID && token.Election == election {
      tokens = append(tokens, token)
    }
  }
@@ -291,16 +291,16 @@ if err != nil {
  }
 }
 
-func (s *SmartContract) HasTokensAvailableForElection(ctx contractapi.TransactionContextInterface, owner string, election string) (*Token_Wallet, bool, error) {
+func (s *SmartContract) HasTokensAvailableForElection(ctx contractapi.TransactionContextInterface, owner string, election string) (*Token_Wallet, error) {
 // La consulta de rango con una cadena vacía para startKey y endKey realiza una consulta abierta de todos los activos en el espacio de nombres del código de cadena.
  resultsIterator, err := ctx.GetStub().GetStateByRange("", "")
  if err != nil {
-	 return nil, false, err
+	 return nil, err
  }
 
  wallet_owner, err := s.GetWalletByOwner(ctx, owner)
  if err != nil {
-   return false, fmt.Errorf("Error al obtener la wallet del votante: %s", err.Error())
+   return nil, fmt.Errorf("Error al obtener la wallet del votante: %s", err.Error())
  }
 
 // cerrar comunicación
@@ -312,26 +312,26 @@ func (s *SmartContract) HasTokensAvailableForElection(ctx contractapi.Transactio
 	 // obtener el siguiente reguiente
 	 queryResponse, err := resultsIterator.Next()
 	 if err != nil {
-		 return nil, false, err
+		 return nil, err
 	 }
 	 // crear variable para instanciar Wallet
 	 token := new(Token_Wallet)
 	 // convertir Bytes array en JSON y asignar a la variable wallet
 	 err = json.Unmarshal(queryResponse.Value, token)
 	 if err != nil {
-		 return nil, false, fmt.Errorf("Unmarshal error: %s", err.Error())
+		 return nil, fmt.Errorf("Unmarshal error: %s", err.Error())
 	 }
-   if token.Token_Amount > 0 && wallet_owner.ID == token.Wallet && election == token.election {
+   if token.Token_Amount > 0 && wallet_owner.ID == token.Wallet.ID && election == token.Election {
      tokens = append(tokens, token)
    }
  }
  if len(tokens) == 1 {
-   return tokens[0], true, nil
+   return tokens[0], nil
  } else {
    if len(tokens) == 0 {
-     return nil, false, fmt.Errorf("El usuario ya no posee tokens disponibles para usar en la elección")
+     return nil, fmt.Errorf("El usuario ya no posee tokens disponibles para usar en la elección")
    } else {
-     return nil, false, fmt.Errorf("El usuario tiene registrados mas de un token en la elección")
+     return nil, fmt.Errorf("El usuario tiene registrados mas de un token en la elección")
    }
  }
 }
@@ -426,20 +426,20 @@ func (s *SmartContract) Token_WalletHistory(ctx contractapi.TransactionContextIn
 */
 func (s *SmartContract) Defray (ctx contractapi.TransactionContextInterface, ownerId string, political_partyId string, electionId string) (bool, error) {
 
-	wallet_owner, err := s.GetWalletByOwner(ctx, voter)
+	_, err := s.GetWalletByOwner(ctx, ownerId)
 	if err != nil {
 		return false, fmt.Errorf("Error al obtener la wallet del votante: %s", err.Error())
 	}
 
-	wallet_pp, err := s.GetWalletByPoliticalParty(ctx, political_party)
-	if err != nil {
-		return false, fmt.Errorf("Error al obtener la wallet del partido politico: %s", err.Error())
+	_, erro := s.GetWalletByPoliticalParty(ctx, political_partyId)
+	if erro != nil {
+		return false, fmt.Errorf("Error al obtener la wallet del partido politico: %s", erro.Error())
 	}
 
-	token, flag, err := s.HasTokensAvailableForElection(ctx, voter, election)
+	token, err := s.HasTokensAvailableForElection(ctx, ownerId, electionId)
 
-	if flag {
-		token_pp, err := s.GetTokenByPoliticalPartyForElection(ctx, political_party, election)
+	if err == nil {
+		token_pp, err := s.GetTokenByPoliticalPartyForElection(ctx, political_partyId, electionId)
 		if err != nil {
 			return false, fmt.Errorf("Error al obtener el token del partido politico: %s", err.Error())
 		}
@@ -460,15 +460,15 @@ func (s *SmartContract) Defray (ctx contractapi.TransactionContextInterface, own
 		}
 		fmt.Printf("estado de validacion: %s", valid)
 		// comvertir Wallet en arreglo de bytes para enviar al ledger
-		token_walletAsBytes, err := json.Marshal(token_wallet)
+		token_walletAsBytes, err := json.Marshal(token_own)
 		if err != nil {
 			fmt.Printf("Marshall error: %s", err.Error())
 			return false, err
 		}
 		// gusrdar nueva wallet
-		err := ctx.GetStub().PutState(token.ID, token_walletAsBytes)
-		if err != nil {
-			return false, fmt.Errorf("Error al obtener la wallet del partido politico: %s", err.Error())
+		error := ctx.GetStub().PutState(token.ID, token_walletAsBytes)
+		if error != nil {
+			return false, fmt.Errorf("Error al obtener la wallet del partido politico: %s", error.Error())
 		}
 
 		token_po_pa := Token_Wallet{
@@ -479,22 +479,22 @@ func (s *SmartContract) Defray (ctx contractapi.TransactionContextInterface, own
 	    Created_At: token_pp.Created_At,
 	  }
 		// Validaciones de sintaxis
-		valid, err := govalidator.ValidateStruct(token_po_pa)
+		validT, err := govalidator.ValidateStruct(token_po_pa)
 		if err != nil {
 			fmt.Printf("Errores de validacion de campos: %s", err.Error())
 			return false, err
 		}
-		fmt.Printf("estado de validacion: %s", valid)
+		fmt.Printf("estado de validacion: %s", validT)
 		// comvertir Wallet en arreglo de bytes para enviar al ledger
-		token_walletAsBytes, err := json.Marshal(token_wallet)
+		token_walletPPAsBytes, err := json.Marshal(token_po_pa)
 		if err != nil {
 			fmt.Printf("Marshall error: %s", err.Error())
 			return false, err
 		}
 		// gusrdar nueva wallet
-		err := ctx.GetStub().PutState(token_pp.ID, token_walletAsBytes)
-		if err != nil {
-			return false, fmt.Errorf("Error al obtener la wallet del partido politico: %s", err.Error())
+		error_State := ctx.GetStub().PutState(token_pp.ID, token_walletPPAsBytes)
+		if error_State != nil {
+			return false, fmt.Errorf("Error al obtener la wallet del partido politico: %s", error_State.Error())
 		}
 		return true, nil
 	} else {
