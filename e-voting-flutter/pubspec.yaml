@@ -1,0 +1,43 @@
+name: e_voting
+description: A new Flutter project.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_localizations:
+    sdk: flutter
+
+  flutter_local_notifications: ^5.0.0+4
+  shared_preferences: ^2.0.5
+  image_picker: ^0.8.4+6
+  google_fonts: ^2.0.0
+  fluttertoast: ^8.0.8
+  http: any
+
+  cupertino_icons: ^1.0.2
+  url_launcher: ^6.0.20
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/tu.png
+    - assets/images/ic_cis.png
+    - assets/images/logo_cis.png
+    - assets/images/logo_unl.png
+    - assets/images/user_desfault.png
+    - assets/images/logo_unl_white.png
+
