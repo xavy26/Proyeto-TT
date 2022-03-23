@@ -1,0 +1,3 @@
+[submodule "e-voting-flutter"]
+	path = e-voting-flutter
+	url = https://gitlab.com/xavy26/e-voting-flutter
